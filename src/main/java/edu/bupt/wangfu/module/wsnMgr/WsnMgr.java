@@ -121,13 +121,13 @@ public class WsnMgr {
     /**
      * 每一个新增订阅都需要添加新的监听
      */
-    public String addListener(String topic) {
+    public String addListener(String topic, User user) {
         String address = encodeTopicTree.getAddress(topic);
         Map<User, List<String>> localSubMap = localSubPub.getLocalSubMap();
         if (address == null || address.equals("")) {
             System.out.println("主题 " + topic + " 对应的编码不存在，订阅失败！");
         }else {
-            if (isNewSubPub(topic, localSubMap)) {
+            if (isNewSubPub(user, topic, localSubMap)) {
                 MessageReceiver messageReceiver = new MessageReceiver();
                 messageReceiver.topic = topic;
                 messageReceiver.topicPort = controller.getTopicPort();
@@ -138,6 +138,7 @@ public class WsnMgr {
                 topicListeners.put(listenerName, thread);
                 thread.start();
             }else {
+
                 System.out.println(topic + " 该主题已监听，请勿重复订阅");
                 return "";
             }
@@ -169,7 +170,7 @@ public class WsnMgr {
         if (address == null || address.equals("")) {
             System.out.println("主题 " + topic + " 对应的编码不存在，注册失败！");
         }else {
-            if (isNewSubPub(topic, localPubMap)) {
+            if (isNewSubPub(user, topic, localPubMap)) {
                 //新的发布注册请求，向控制器上报发布信息
                 wsnNotificationProcess.send2controller(topic, user, address, PUBLISH);
                 //添加至本地发布表中
@@ -197,12 +198,10 @@ public class WsnMgr {
     /**
      * 判断主题是否为集群内新增订阅，是则需要添加单独的监听
      */
-    public boolean isNewSubPub(String topic, Map<User, List<String>> map) {
-        for (User user : map.keySet()) {
-            List<String> list = map.get(user);
-            if (list!= null && list.contains(topic)) {
-                return false;
-            }
+    public boolean isNewSubPub(User user, String topic, Map<User, List<String>> map) {
+        List<String> list = map.get(user);
+        if (list!= null && list.contains(topic)) {
+            return false;
         }
         return true;
     }

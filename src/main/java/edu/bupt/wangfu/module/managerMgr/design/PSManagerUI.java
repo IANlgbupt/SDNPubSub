@@ -1397,7 +1397,7 @@ public class PSManagerUI {
 
                                 if(!groupSwitchMap.isEmpty()){
                                     for (final String switchName : groupSwitchMap.keySet()) {
-                                        final JButton groupSwitchButton = new JButton("*" + switchName.substring(switchName.length() - 3));
+                                        final JButton groupSwitchButton = new JButton(switchName);
                                         groupSwitchButton.setToolTipText("Group " + currentGroup + "'s Switch:" + switchName);
                                         groupSwitchButton.setPreferredSize(new Dimension(50, 50));
                                         groupSwitchButton.setHorizontalTextPosition(SwingConstants.CENTER);

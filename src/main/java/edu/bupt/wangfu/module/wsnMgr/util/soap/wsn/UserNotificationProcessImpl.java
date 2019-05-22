@@ -50,20 +50,15 @@ public class UserNotificationProcessImpl implements INotificationProcess {
                 MySubscriber.sendTimeList.add(Long.valueOf(strings[1]));
                 MySubscriber.receiveTimeList.add(System.currentTimeMillis());
             }else {
-                if (MySubscriber.flag){
+                if (MySubscriber.flag) {
                     int count = MySubscriber.sendTimeList.size();
                     long delay = 0L;
                     for (int i = 0; i < count; i++) {
-                        delay += (MySubscriber.receiveTimeList.get(i) - MySubscriber.sendTimeList.get(i));
+                        delay += Math.abs(MySubscriber.receiveTimeList.get(i) - MySubscriber.sendTimeList.get(i));
                     }
+                    System.out.println("发包总数：" + MySubscriber.num + " 接收总数：" + count + " 总时延：" + delay
+                            + " 平均时延：" + delay/count);
                     MySubscriber.flag = false;
-                    if (count == 0) {
-                        System.out.println("not yet!");
-                    }else {
-                        System.out.println("发包总数：" + MySubscriber.num + " 接收总数：" + count + " 总时延：" + delay + " 平均时延：" + delay/count);
-                    }
-                }else {
-                    //nothing
                 }
             }
         }

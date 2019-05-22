@@ -59,7 +59,7 @@ public class WsnNotificationProcessImpl implements INotificationProcess{
                     user.setAddress(userAddress);
                 }
                 //wsn 开启新的监听
-                encodeAddress = wsnMgr.addListener(topic);
+                encodeAddress = wsnMgr.addListener(topic, user);
                 //将该用户订阅信息保存至本地订阅表
                 wsnMgr.registerSub(user, topic);
                 //向控制器上报订阅信息

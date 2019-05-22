@@ -36,4 +36,12 @@ public class Trans {
 		return receiveAddr;
 	}
 
+	public void negotiate() {
+		negotiate(10, 0.1);
+	}
+
+	public void negotiate(long delay, double lost) {
+
+	}
+
 }

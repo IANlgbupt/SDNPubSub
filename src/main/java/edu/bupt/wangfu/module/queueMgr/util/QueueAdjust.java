@@ -51,7 +51,7 @@ public class QueueAdjust implements Runnable{
             for (Switch swt : controller.getOutSwitches().values()) {
                 Map<Integer, List<Queue>> queueMap = swt.getQueueMap();
                 for (Integer outPort : queueMap.keySet()) {
-                    setValue(outPort, queueMap.get(outPort));
+//                    setValue(outPort, queueMap.get(outPort));
                 }
             }
         }

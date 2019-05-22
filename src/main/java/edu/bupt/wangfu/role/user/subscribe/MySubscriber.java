@@ -77,12 +77,6 @@ public class MySubscriber {
         f.getContentPane().add(mainPanel, BorderLayout.CENTER);
         f.setSize(new Dimension(380,420));
         f.setVisible(true);
-
-        Scanner in = new Scanner(System.in);
-        while (in.hasNext()) {
-            num = in.nextInt();
-            System.out.println("num: " + num);
-        }
     }
 
     class setupButtonListener implements ActionListener {
@@ -166,7 +160,15 @@ public class MySubscriber {
 
     public static void main(String[] args) {
         //更新constant 类中的属性值
-        PropertiesTest.refreshPro();
+//        PropertiesTest.refreshPro();
         new MySubscriber();
+        Scanner in = new Scanner(System.in);
+        while (in.hasNext()) {
+            num = in.nextInt();
+            System.out.println("num: " + num);
+            flag = true;
+            sendTimeList = new LinkedList<>();
+            receiveTimeList = new LinkedList<>();
+        }
     }
 }

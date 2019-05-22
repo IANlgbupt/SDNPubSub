@@ -42,18 +42,14 @@ public class Trans {
 	 * @param num
 	 */
 	public void sendTest(int num) {
-		if (!publishAddress.equals("")) {
-			send = new SendWSNCommandWSSyn(sendAddr, publishAddress);
-		}else {
-			System.out.println("用户还未获得发布地址，无法发布！");
-		}
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 256-13-4; i++) {
+		for (int i = 0; i < MyPublisher.pack-13-4; i++) {
 			sb.append('a');
 		}
 		String msg = sb.toString();
+		send = new SendWSNCommandWSSyn(sendAddr, publishAddress);
 		//发三倍，防止丢包
-		for (int i = 0; i < num * 1.5; i++) {
+		for (int i = 0; i < MyPublisher.num * 1.5; i++) {
 			send.publish(id, sendTopic, i + ":" + System.currentTimeMillis() + ":" + msg);
 		}
 		System.out.println("over");
@@ -65,25 +61,26 @@ public class Trans {
 		}else {
 			System.out.println("用户还未获得发布地址，无法发布！");
 		}
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 1024-13-4; i++) {
-			sb.append('a');
-		}
-		String msg = sb.toString();
-		//发三倍，防止丢包
-		long startTime = System.currentTimeMillis(), endTime;
-		for (int i = 0; i < num * 1.5; i++) {
-			send.publish(id, sendTopic, i + ":" + System.currentTimeMillis() + ":" + msg);
-			endTime = System.currentTimeMillis();
-			if (endTime - startTime > 1000) {
-				try {
-					Thread.sleep(endTime - startTime);
-					startTime = System.currentTimeMillis();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		send.publish(id, sendTopic, String.valueOf(System.currentTimeMillis()));
+//		StringBuilder sb = new StringBuilder();
+//		for (int i = 0; i < 1024-13-4; i++) {
+//			sb.append('a');
+//		}
+//		String msg = sb.toString();
+//		//发三倍，防止丢包
+//		long startTime = System.currentTimeMillis(), endTime;
+//		for (int i = 0; i < num * 1.5; i++) {
+//			send.publish(id, sendTopic, i + ":" + System.currentTimeMillis() + ":" + msg);
+//			endTime = System.currentTimeMillis();
+//			if (endTime - startTime > 1000) {
+//				try {
+//					Thread.sleep(endTime - startTime);
+//					startTime = System.currentTimeMillis();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
 		System.out.println("over");
 	}
 }

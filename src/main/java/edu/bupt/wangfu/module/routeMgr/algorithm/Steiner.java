@@ -119,7 +119,9 @@ public class Steiner {
             List<Neighbor> neighbors = all[i].getNeighbors();
             for(Neighbor ne : neighbors){
                 int seq = calSeq(ne, all);
-                dist[i][seq] = ne.distance;
+                if (seq >= 0) {
+                    dist[i][seq] = ne.distance;
+                }
             }
         }
 

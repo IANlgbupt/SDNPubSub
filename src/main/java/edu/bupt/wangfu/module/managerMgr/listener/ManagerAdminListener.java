@@ -78,6 +78,8 @@ public class ManagerAdminListener implements Runnable{
         String topic = msg.getTopic();
         long delay = msg.getDelay();
         double lostRate = msg.getLostRate();
+        System.out.println("****************************收到 " + group + " 时延带宽请求：delay -- " + delay
+        + "；lost -- " + lostRate + " *****************************************");
         //计算带宽
         double bind = 88.8;
 

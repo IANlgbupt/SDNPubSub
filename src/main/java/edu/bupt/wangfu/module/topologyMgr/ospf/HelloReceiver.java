@@ -4,6 +4,8 @@ import edu.bupt.wangfu.info.device.Controller;
 import edu.bupt.wangfu.info.device.Flow;
 import edu.bupt.wangfu.info.device.Switch;
 import edu.bupt.wangfu.info.message.system.HelloMsg;
+import edu.bupt.wangfu.module.managerMgr.design.PSManagerUI;
+import edu.bupt.wangfu.module.managerMgr.util.AllGroups;
 import edu.bupt.wangfu.module.routeMgr.RouteMgr;
 import edu.bupt.wangfu.module.routeMgr.util.AllFlows;
 import edu.bupt.wangfu.module.routeMgr.util.Node;
@@ -17,10 +19,7 @@ import edu.bupt.wangfu.module.util.MultiHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static edu.bupt.wangfu.module.util.Constant.*;
 
@@ -50,6 +49,12 @@ public class HelloReceiver implements Runnable {
     @Autowired
     AllFlows allFlows;
 
+    @Autowired
+    PSManagerUI ui;
+
+    @Autowired
+    AllGroups allGroups;
+
     @Override
     public void run() {
         int sysPort = controller.getSysPort();
@@ -69,13 +74,13 @@ public class HelloReceiver implements Runnable {
      * @param msg
      */
     public void onMsgReceive(HelloMsg msg) {
+        System.out.println("msg: " + msg);
         if (!msg.getStartGroup().equals(controller.getLocalGroupName())) {
-//            System.out.println(msg);
             //第一次握手，收到 Hello 消息，返回 ReHello
             if (msg.getEndGroup() == null && msg.getState() == State.down && msg.getType().equals(HELLO)) {
                 if (isNew(msg.getStartGroup(), routeMgr.getAllNodes()) && isValid(msg.getSendTime(), HELLO)) {
                     System.out.println("收到 Hello 消息，第一次握手~~ " + msg);
-                        new Thread(new OnHelloClass(msg)).start();
+                    new Thread(new OnHelloClass(msg)).start();
                 }
             }else if (msg.getEndGroup().equals(controller.getLocalGroupName()) && msg.getState() == State.init
                     && msg.getType().equals(RE_HELLO)) {
@@ -138,7 +143,7 @@ public class HelloReceiver implements Runnable {
                     re_hello.setStartOutPort(out);
                     re_hello.setSendTime(System.currentTimeMillis());
                     handler.v6Send(re_hello);
-                    RouteUtil.delRouteFlow(flow, ovsProcess);
+//                    RouteUtil.delRouteFlow(flow, ovsProcess);
                 }
             }
         }
@@ -148,9 +153,11 @@ public class HelloReceiver implements Runnable {
      * 收到RE_Hello 消息，需要更新LSDB 并发送 Final_Hello
      */
     private class OnReHelloClass implements Runnable {
+        private HelloMsg msg;
         HelloMsg final_hello;
 
-        OnReHelloClass(HelloMsg msg) {
+        OnReHelloClass(HelloMsg temp) {
+            msg = temp;
             final_hello = new HelloMsg();
             final_hello.setLocalGroupName(controller.getLocalGroupName());
             final_hello.setStartGroup(controller.getLocalGroupName());
@@ -176,6 +183,10 @@ public class HelloReceiver implements Runnable {
             handler.v6Send(final_hello);
             //下发管理路径流表
             addAdminFlow(out);
+            //设置定时任务，发送心跳消息
+            new Timer().schedule(new HeartTask(msg), 1000, 5000);
+            //设置监听，如果超时未收到心跳消息，视为链路中断，重新计算路由
+            new Timer().schedule(new listenTask(msg.getLsa()), 1000, 5000*3);
         }
     }
 
@@ -188,6 +199,10 @@ public class HelloReceiver implements Runnable {
                 String.valueOf(controller.getSwitchPort()), out, controller.getSysV6Addr(), ovsProcess);
         //下发管理路径流表
         addAdminFlow(out);
+        //设置定时任务，发送心跳消息
+        new Timer().schedule(new HeartTask(msg), 1000, 5000);
+        //设置监听，如果超时未收到心跳消息，视为链路中断，重新计算路由
+        new Timer().schedule(new listenTask(msg.getLsa()), 1000, 5000*3);
     }
 
     //收到LSDB 广播消息，该集群新增订阅，需要重新计算该主题的组播路径
@@ -224,8 +239,10 @@ public class HelloReceiver implements Runnable {
     private void onHeartReceive(HelloMsg msg) {
         String group = msg.getStartGroup();
         Lsa lsa = msg.getLsa();
+        lsa.setSendTime(System.currentTimeMillis());
         lsdb.getLSDB().put(group, lsa);
-        System.out.println("收到 " + group + " 心跳消息，更新LSDB：" + lsa);
+        System.out.println("============================================\n收到 " + group +
+                " 心跳消息: " + lsa + "\n刷新存活时间================================================");
     }
 
     /**
@@ -306,5 +323,80 @@ public class HelloReceiver implements Runnable {
         Flow flow = new Flow(PRIORITY, String.valueOf(controller.getSwitchPort()), port,
                 controller.getAdminV6Addr());
         ovsProcess.addFlow(flow);
+    }
+
+    public class HeartTask extends TimerTask {
+        private HelloMsg msg;
+
+        public HeartTask(HelloMsg msg) {
+            this.msg = msg;
+        }
+
+        @Override
+        public void run() {
+            HelloMsg hello = new HelloMsg();
+            MultiHandler handler = new MultiHandler(controller.getSysPort(), controller.getSysV6Addr());
+            hello.setLocalGroupName(controller.getLocalGroupName());
+            hello.setStartGroup(controller.getLocalGroupName());
+            hello.setEndGroup(msg.getStartGroup());
+            hello.setStartBorderSwtId(msg.getEndBorderSwtId());
+            hello.setEndBorderSwtId(msg.getStartBorderSwtId());
+            hello.setStartOutPort(msg.getEndOutPort());
+            hello.setEndOutPort(msg.getStartOutPort());
+            hello.setLsa(localLsa);
+            hello.setType(HEART);
+            hello.setRole(controller.getRole());
+            hello.setState(State.two_way);
+            hello.setSendTime(System.currentTimeMillis());
+            handler.v6Send(hello);
+        }
+    }
+
+    public class listenTask extends TimerTask{
+        Lsa lsa;
+
+        public listenTask(Lsa lsa) {
+            this.lsa = lsa;
+        }
+
+        @Override
+        public void run() {
+            Lsa newLsa = lsdb.getLSDB().get(lsa.getGroupName());
+            if (newLsa != null && (lsa.getSendTime() == null || newLsa.getSendTime() != lsa.getSendTime())) {
+                System.out.println("===============================================\n集群 "
+                        + lsa.getGroupName() + " 定时监听任务成功，刷新存活时间\n======================================");
+                System.out.println(lsa.getSendTime() + "\t" + newLsa.getSendTime());
+                lsa = newLsa;
+            }else {
+                System.out.println("===============================================\n集群 "
+                        + lsa.getGroupName() + " 定时监听任务失败，删除lsa");
+                lsdb.getLSDB().remove(lsa.getGroupName());
+                this.cancel();
+                //删除ui界面
+                allGroups.getAllGroups().remove(lsa.getGroupName());
+                ui.reloadAllGroup();
+                System.out.println("重新计算路由，当前订阅情况为：=======================================");
+                for (String topic : routeMgr.getAllSubNodes().keySet()) {
+                    System.out.print("主题：" + topic + "\t订阅集群：");
+                    for (Node node : routeMgr.getAllSubNodes().get(topic)) {
+                        System.out.print(node.getName() + ", ");
+                    }
+                    System.out.print("主题：" + topic + "\t发布集群：");
+                    for (Node node : routeMgr.getAllPubNodes().get(topic)) {
+                        System.out.print(node.getName() + ", ");
+                    }
+                    //下发主题路径
+                    Set<Node> set = new HashSet<>();
+                    if (routeMgr.getAllSubNodes().get(topic) != null) {
+                        set.addAll(routeMgr.getAllSubNodes().get(topic));
+                    }
+                    if (routeMgr.getAllPubNodes().get(topic) != null) {
+                        set.addAll(routeMgr.getAllPubNodes().get(topic));
+                    }
+                    RouteUtil.downTopicRtFlows(routeMgr.getAllNodes(), set,
+                            controller, topicTreeMgr.getEncodeTopicTree().getAddress(topic), ovsProcess);
+                }
+            }
+        }
     }
 }

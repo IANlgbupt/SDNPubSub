@@ -7,6 +7,7 @@ import edu.bupt.wangfu.info.device.Switch;
 import edu.bupt.wangfu.info.device.User;
 import edu.bupt.wangfu.info.message.admin.EncodeTopicTreeMsg;
 import edu.bupt.wangfu.info.message.admin.GroupMessage;
+import edu.bupt.wangfu.info.message.wsn.TopicEncodeMsg;
 import edu.bupt.wangfu.module.managerMgr.ManagerMgr;
 import edu.bupt.wangfu.module.managerMgr.design.PSManagerUI;
 import edu.bupt.wangfu.module.managerMgr.listener.ManagerWsnListener;
@@ -186,7 +187,19 @@ public class ManagerStart {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(ControllerConfig.class);
         ManagerStart managerStart = (ManagerStart) context.getBean("managerStart");
-        managerStart.start();
+//        managerStart.start();
+        managerStart.test();
+    }
+
+    public void test() {
+        topicTreeMgr.buildTopicTree();
+        int wsnPort = controller.getWsnPort();
+        String address = controller.getWsnV6Addr();
+        MultiHandler handler = new MultiHandler(wsnPort, address);
+        TopicEncodeMsg msg = new TopicEncodeMsg();
+        msg.setTopicTree(encodeTopicTree);
+        handler.v6Send(msg);
+        System.out.println("向controller发送编码主题树，大小：" + encodeTopicTree.getSize());
     }
 
 }

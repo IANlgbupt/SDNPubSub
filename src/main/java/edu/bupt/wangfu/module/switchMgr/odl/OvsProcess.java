@@ -118,23 +118,48 @@ public class OvsProcess {
 
     //添加流表
     public void addFlow(Flow flow) {
-        allFlows.getFlowList().add(flow);
-        StringBuilder sb = new StringBuilder(flow.getOut());
-        for (Flow other : allFlows.getFlowList()) {
-            if (other.isSame(flow)) {
-                sb.append("," + other.getOut());
+        if (allFlows.getFlowList().contains(flow)) {
+            System.out.println("flow " + flow + " 已存在");
+            return;
+        }else {
+            StringBuilder sb = new StringBuilder(flow.getOut());
+            for (Flow other : allFlows.getFlowList()) {
+                if (other.isSame(flow)) {
+                    sb.append("," + other.getOut());
+                }
             }
+            allFlows.getFlowList().add(flow);
+            String cmd = ADD_FLOW + String.format("priority=%s,in_port=%s,dl_type=0x86DD,ipv6_dst=%s/128,actions=output:%s",
+                    PRIORITY, flow.getIn(), flow.getV6(), sb);
+            System.out.println("下发流表：" + flow);
+            remoteExecuteCommand(cmd);
         }
-        String cmd = ADD_FLOW + String.format("priority=%s,in_port=%s,dl_type=0x86DD,ipv6_dst=%s/128,actions=output:%s",
-                PRIORITY, flow.getIn(), flow.getV6(), sb);
-        remoteExecuteCommand(cmd);
-//        System.out.println("当前所有流表：\n" + allFlows.getFlowList());
     }
 
     //删除所有流表
-    public void deleteFlows(String body) {
-        String cmd = DEL_FLOW + body;
-        remoteExecuteCommand(cmd);
+    public void deleteFlows(Flow flow) {
+        boolean flag = false;
+        for (Flow other : allFlows.getFlowList()) {
+            if (other.isSame(flow)) {
+                flag = true;
+                break;
+            }
+        }
+        allFlows.getFlowList().remove(flow);
+        if (flag) {
+            StringBuilder sb = new StringBuilder();
+            for (Flow other : allFlows.getFlowList()) {
+                if (other.isSame(flow)) {
+                    sb.append(other.getOut() + ",");
+                }
+            }
+            String cmd = ADD_FLOW + String.format("priority=%s,in_port=%s,dl_type=0x86DD,ipv6_dst=%s/128,actions=output:%s",
+                    PRIORITY, flow.getIn(), flow.getV6(), sb.substring(0, sb.length()-1));
+            remoteExecuteCommand(cmd);
+        }else {
+            String cmd = DEL_FLOW + flow.toStringDelete();
+            remoteExecuteCommand(cmd);
+        }
     }
 
     //查看下发的所有流表
@@ -190,9 +215,9 @@ public class OvsProcess {
         String trans;
         String index = "";
         switch (queue.getId()) {
-            case 0 : index = "Queue 7:"; break;
-            case 1 : index = "Queue 6:"; break;
-            case 2 : index = "Queue 5:"; break;
+            case 0 : index = "Queue 0:"; break;
+            case 1 : index = "Queue 1:"; break;
+            case 2 : index = "Queue 2:"; break;
         }
         String sub = rtn.substring(rtn.indexOf(index));
         int left = sub.indexOf("tx_bytes: ");

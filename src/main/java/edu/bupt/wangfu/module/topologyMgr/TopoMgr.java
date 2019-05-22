@@ -87,7 +87,7 @@ public class TopoMgr{
         preStart();
         new Thread(helloReceiver, "拓扑发现").start();
         HeartTask heartTask = new HeartTask();
-        new Timer().schedule(heartTask, 100, 20000);
+        new Timer().schedule(heartTask, 100, 6000000);
     }
 
     //心跳任务，定时向所有对外端口发送hello消息
@@ -101,7 +101,7 @@ public class TopoMgr{
                             String.valueOf(controller.getSwitchPort()), out, controller.getSysV6Addr(), ovsProcess);
                     sendHello(out, swt.getId());
                     //Hello 消息需删除对应流表
-                    RouteUtil.delRouteFlow(flow, ovsProcess);
+//                    RouteUtil.delRouteFlow(flow, ovsProcess);
                 }
             }
         }
@@ -129,6 +129,7 @@ public class TopoMgr{
         hello.setRole(controller.getRole());
         hello.setSendTime(System.currentTimeMillis());
         handler.v6Send(hello);
+        System.out.println("发送Hello： " + hello);
     }
 
     /**

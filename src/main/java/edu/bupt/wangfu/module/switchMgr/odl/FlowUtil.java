@@ -94,7 +94,7 @@ public class FlowUtil {
                 ovsProcess.addFlow(flow);
                 break;
             case DELETE:
-                ovsProcess.deleteFlows(flow.toStringDelete());
+                ovsProcess.deleteFlows(flow);
                 break;
             case DUMP:
                 ovsProcess.dumpFlows();
@@ -105,6 +105,6 @@ public class FlowUtil {
     }
 
     public static void deleteFlow(Flow flow, OvsProcess ovsProcess) {
-        ovsProcess.deleteFlows(flow.toStringDelete());
+        ovsProcess.deleteFlows(flow);
     }
 }

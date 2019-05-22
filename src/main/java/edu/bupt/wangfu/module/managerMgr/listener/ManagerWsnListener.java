@@ -216,8 +216,8 @@ public class ManagerWsnListener implements Runnable{
             String endGroup = lsa.getGroupName();
             if (!endGroup.equals(groupName)) {
                 hello.setEndGroup(endGroup);
-                String address = lsa.getAddress();
-                int port = lsa.getPort();
+                String address = controller.getSysV6Addr();
+                int port = controller.getSysPort();
                 MultiHandler handler = new MultiHandler(port, address);
                 Long time = System.currentTimeMillis();
                 hello.setSendTime(time);

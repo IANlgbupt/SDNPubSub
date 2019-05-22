@@ -65,8 +65,8 @@ public class AdminListener implements Runnable{
             }else if (msg instanceof RequestFeedBackMsg) {
                 //下发具体带宽分配结果
                 RequestFeedBackMsg feedBackMsg = (RequestFeedBackMsg) msg;
-                System.out.println("RequestFeedBackMsg\t" + feedBackMsg.getBind());
-                handleFeedBack(feedBackMsg);
+                System.out.println("*****************************收到用户协商计算结果\t" + feedBackMsg);
+//                handleFeedBack(feedBackMsg);
             }else if (msg instanceof ConfigureMsg) {
                 //收到管理员下发配置信息，修改controller中相应参数
                 ConfigureMsg configureMsg = (ConfigureMsg) msg;
