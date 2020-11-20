@@ -184,9 +184,9 @@ public class HelloReceiver implements Runnable {
             //下发管理路径流表
             addAdminFlow(out);
             //设置定时任务，发送心跳消息
-            new Timer().schedule(new HeartTask(msg), 1000, 5000);
+            new Timer().schedule(new HeartTask(msg), 1000, 50000);
             //设置监听，如果超时未收到心跳消息，视为链路中断，重新计算路由
-            new Timer().schedule(new listenTask(msg.getLsa()), 1000, 5000*3);
+            new Timer().schedule(new listenTask(msg.getLsa()), 1000, 50000*3);
         }
     }
 

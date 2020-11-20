@@ -43,12 +43,14 @@ public class ControllerInit {
         sw.setPassword("pica8");
         Set<String> ports = new HashSet<>();
         ports.add("1");
-//        ports.add("2");
         ports.add("2");
+        ports.add("3");
+        ports.add("4");
+//        ports.add("2");
         sw.setPorts(ports);
         Map<String, String> outPorts = new HashMap<>();
-//        outPorts.put("2", "2");
-        outPorts.put("2", "2");
+        outPorts.put("2","2");
+        //outPorts.put("4","4");
         sw.setOutPorts(outPorts);
         Map<String, Switch> switchMap = new HashMap<>();
         switchMap.put(sw.getId(), sw);

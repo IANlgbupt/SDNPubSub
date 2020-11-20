@@ -1,11 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/xsd/" targetNamespace="http://www.example.org/xsd/">
-  <topic xmlns="" name="all:Test:newTestOutput" type="tns:ComplexType"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="name" type="xs:string"/>
 
-  <values xmlns="" name="this is test url1">
-    <test1 type="int">30</test1>
-    <test2 type="int">30</test2>   
-  </values>
- 
-
-
-</schema>
+</xs:schema>

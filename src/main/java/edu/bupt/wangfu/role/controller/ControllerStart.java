@@ -40,7 +40,7 @@ import static edu.bupt.wangfu.module.queueMgr.util.GetInfo.getQueueInfo;
  *                    由 TopoMgr 拓扑模块负责
  *     3. wsnMessage：wsn消息，集群发布订阅情况
  *                    由 WsnListener 监听本集群发布订阅情况
- *
+ *'
  * @see TopoMgr
  * @see AdminListener
  * @see WsnListener
@@ -139,10 +139,19 @@ public class ControllerStart {
         topoMgr.start();
         //启动wsn监听，接收集群内的发布订阅情况
         exec.execute(wsnListener);
+        //initQueue();
         //启动队列管理
         queueMgr.start(exec);
     }
-
+    //Add
+    public void initQueue()
+    {
+        for (Switch swt : controller.getOutSwitches().values()) {
+            for (String port : swt.getOutPorts().values()) {
+                ovsProcess.defaultInitQueues(Integer.valueOf(port));
+            }
+        }
+    }
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(ControllerConfig.class);
         ControllerStart controllerStart = (ControllerStart) context.getBean("controllerStart");

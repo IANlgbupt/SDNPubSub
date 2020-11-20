@@ -17,10 +17,10 @@ public class MySubscriber {
 //    public static String sendEndTime = null;
 //    public static long receiveStartTime = 0L;
 //    public static long receiveEndTime = 0L;
-    public static int num = 0;
+    public static int num = 40000;
     public static boolean flag = true;
-    public static java.util.List<Long> sendTimeList = new LinkedList<>();
-    public static java.util.List<Long> receiveTimeList = new LinkedList<>();
+    public static java.util.List<Long> sendTimeList;
+    public static java.util.List<Long> receiveTimeList;
     JFrame f = new JFrame("Client");
 
     JButton setupButton = new JButton("Setup");
@@ -50,7 +50,7 @@ public class MySubscriber {
         buttonPanel.add(setupButton);
         buttonPanel.add(resetButton);
         setupButton.addActionListener(new setupButtonListener());
-        setupButton.addActionListener(new resetButtonListener());
+        resetButton.addActionListener(new resetButtonListener());
 
         //frame layout
         mainPanel.setLayout(null);
@@ -86,6 +86,8 @@ public class MySubscriber {
             if (trans == null) {
                 trans = new Trans();
             }
+            sendTimeList = new LinkedList<>();
+            receiveTimeList = new LinkedList<>();
         }
     }
 
@@ -93,7 +95,7 @@ public class MySubscriber {
 
         public synchronized void actionPerformed(ActionEvent e){
             System.out.println("Reset Button pressed !");
-            num = 0;
+//            num = 0;
             flag = true;
             sendTimeList = new LinkedList<>();
             receiveTimeList = new LinkedList<>();
@@ -131,18 +133,19 @@ public class MySubscriber {
                 curSeqNb = seqNum;
                 lastImage = image;
             }else {
-                if (seqNum < curSeqNb) {
-                    queue.add(lastImage);
-                }
-                else if (seqNum > curSeqNb) {
-                    for (int i = curSeqNb; i < seqNum; i++) {
-                        queue.add(lastImage);
-                    }
-                    queue.add(image);
-                }
-                else {
-                    queue.add(image);
-                }
+//                if (seqNum < curSeqNb) {
+//                    queue.add(lastImage);
+//                }
+//                else if (seqNum > curSeqNb) {
+//                    for (int i = curSeqNb; i < seqNum; i++) {
+//                        queue.add(lastImage);
+//                    }
+//                    queue.add(image);
+//                }
+//                else {
+//                    queue.add(image);
+//                }
+                queue.add(image);
             }
         }
 
@@ -162,13 +165,13 @@ public class MySubscriber {
         //更新constant 类中的属性值
 //        PropertiesTest.refreshPro();
         new MySubscriber();
-        Scanner in = new Scanner(System.in);
-        while (in.hasNext()) {
-            num = in.nextInt();
-            System.out.println("num: " + num);
-            flag = true;
-            sendTimeList = new LinkedList<>();
-            receiveTimeList = new LinkedList<>();
-        }
+//        Scanner in = new Scanner(System.in);
+//        while (in.hasNext()) {
+//            num = in.nextInt();
+//            System.out.println("num: " + num);
+//            flag = true;
+//            sendTimeList0 = new LinkedList<>();
+//            receiveTimeList0 = new LinkedList<>();
+//        }
     }
 }

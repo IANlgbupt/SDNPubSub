@@ -10,7 +10,7 @@ import javax.jws.WebService;
         serviceName="NotificationProcessImpl")
 public class TestNotificationProcessImpl implements INotificationProcess {
     @Override
-    public void notificationProcess(String notification) {
+    public String notificationProcess(String notification) {
         String msg = splitString(notification, "<message>", "</message>");
         String[] strings = msg.split(":");
         int id = Integer.parseInt(strings[0]);
@@ -29,6 +29,7 @@ public class TestNotificationProcessImpl implements INotificationProcess {
                 Receive.flag = false;
             }
         }
+        return "success";
     }
 
     public String splitString(String string, String start, String end)

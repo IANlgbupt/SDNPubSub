@@ -46,7 +46,8 @@ public class Dispatcher {
         String topic = task.getTopic();
         Map<User, List<String>> localSubMap = localSubPub.getLocalSubMap();
         //总队列负载均衡处理机制
-        LoadBalance.dispatcherBalance(handleMap);
+//        LoadBalance.dispatcherBalance(handleMap);
+//        System.out.println("dispatcher: " + task.getMsg());
         for (User user : localSubMap.keySet()) {
             if (localSubMap.get(user).contains(topic)) {
                 Handle handle = handleMap.get(user);

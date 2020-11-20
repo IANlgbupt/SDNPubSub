@@ -9,10 +9,11 @@ import javax.jws.soap.SOAPBinding;
  * @author 柴兆航
  * @version 1.0
  *
+ *
  */
 @WebService(targetNamespace = "http://edu.bupt.wangfu.module.wsnMgr.util.soap",name = "INotificationProcess")
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public interface INotificationProcess{
-	public void notificationProcess(@WebParam(partName = "Wsn", name = "WsnProcess",
+	public String notificationProcess(@WebParam(partName = "Wsn", name = "WsnProcess",
 			targetNamespace = "http://edu.bupt.wangfu.module.wsnMgr.util.soap") String notification);
 }

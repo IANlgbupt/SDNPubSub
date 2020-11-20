@@ -15,7 +15,7 @@ import java.util.Scanner;
 import static edu.bupt.wangfu.module.util.Constant.FILE;
 
 public class MyPublisher {
-    public static int num = 0;
+    public static int num = 256;
     public static int pack = 256;
     JFrame f = new JFrame("Server");
     JButton setupButton = new JButton("Setup");

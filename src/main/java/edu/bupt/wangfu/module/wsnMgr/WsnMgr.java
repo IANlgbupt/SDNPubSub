@@ -17,10 +17,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 
 import javax.xml.ws.Endpoint;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -95,6 +92,7 @@ public class WsnMgr {
         new Thread(wsnReceive, "wsnReceive监听").start();
         //开启发布订阅注册服务
         Endpoint endpint = Endpoint.publish(wsnAddr, wsnNotificationProcess);
+
         dispatcher.handleEvents();
     }
 
@@ -123,22 +121,24 @@ public class WsnMgr {
      */
     public String addListener(String topic, User user) {
         String address = encodeTopicTree.getAddress(topic);
-        Map<User, List<String>> localSubMap = localSubPub.getLocalSubMap();
+//        String address = "FF0E:80:401::A000";
+        ArrayList localSubList = localSubPub.getSubList();
         if (address == null || address.equals("")) {
             System.out.println("主题 " + topic + " 对应的编码不存在，订阅失败！");
         }else {
-            if (isNewSubPub(user, topic, localSubMap)) {
+            if (!localSubList.contains(topic)) {
                 MessageReceiver messageReceiver = new MessageReceiver();
                 messageReceiver.topic = topic;
                 messageReceiver.topicPort = controller.getTopicPort();
                 messageReceiver.address = address;
                 String listenerName = topic + "Listener";
                 Thread thread = new Thread(messageReceiver, listenerName);
+                System.out.println(address);
                 //将新增的主题监听线程保存，集中管理监听线程的生命周期
                 topicListeners.put(listenerName, thread);
                 thread.start();
+                localSubPub.getSubList().add(topic);
             }else {
-
                 System.out.println(topic + " 该主题已监听，请勿重复订阅");
                 return "";
             }
@@ -166,7 +166,9 @@ public class WsnMgr {
     public String registerPub(User user, String topic) {
         Map<User, List<String>> localPubMap = localSubPub.getLocalPubMap();
         String address = encodeTopicTree.getAddress(topic);
+//        String address = "FF0E:80:401::A000";
         String publishAddress  = getPubAddress(localPubMap.keySet(), user);
+        System.out.println("registerPub_publishAddress"+publishAddress);
         if (address == null || address.equals("")) {
             System.out.println("主题 " + topic + " 对应的编码不存在，注册失败！");
         }else {
@@ -183,7 +185,7 @@ public class WsnMgr {
                 }
                 localPubMap.put(user, pubList);
             }else {
-                System.out.println(topic + " 该主题已注册，请勿重复发布");
+                System.out.println(topic + " 监听已注册");
             }
 
             if (!publishAddress.equals("")) {
@@ -229,6 +231,7 @@ public class WsnMgr {
             MultiHandler handler = new MultiHandler(topicPort, address);
             while (true) {
                 Object msg = handler.v6Receive();
+                System.out.println("socket收到消息：" + msg);
                 onMsgReceive(msg);
             }
         }
@@ -249,6 +252,28 @@ public class WsnMgr {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(ControllerConfig.class);
         WsnMgr wsnMgr = (WsnMgr) context.getBean("wsnMgr");
+//        new Timer().schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.println("发送task");
+//                wsnMgr.sendTask();
+//            }
+//        }, 600000, 1000);
         wsnMgr.start();
+    }
+
+    public void sendTask() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 1024 - 60; i++) {
+            sb.append('a');
+        }
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            Task task = new Task();
+            task.setTopic("test1");
+            String msg = i + ":" + System.nanoTime() + ":" + sb;
+            task.setMsg(msg);
+            selector.addTask(task);
+        }
     }
 }

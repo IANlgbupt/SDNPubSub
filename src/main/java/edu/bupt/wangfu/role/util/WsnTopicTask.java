@@ -26,5 +26,6 @@ public class WsnTopicTask extends TimerTask {
         msg.setTopicTree(encodeTopicTree);
         handler.v6Send(msg);
         System.out.println("向wsnReceiver发送消息，大小：" + encodeTopicTree.getSize());
+
     }
 }

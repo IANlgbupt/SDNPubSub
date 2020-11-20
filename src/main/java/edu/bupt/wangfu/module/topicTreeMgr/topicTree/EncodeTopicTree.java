@@ -48,7 +48,11 @@ public class EncodeTopicTree implements Serializable{
      */
     public String getAddress(String topic) {
         for (EncodeTopicTreeEntry entry : nodes) {
+
+            System.out.println("====EncodeTopicTree::getAddress===="+entry.getTopic());
+
             if (entry.getTopic().equals(topic)) {
+                System.out.println("====entry.getAddress()===="+entry.getAddress());
                 return entry.getAddress();
             }
         }

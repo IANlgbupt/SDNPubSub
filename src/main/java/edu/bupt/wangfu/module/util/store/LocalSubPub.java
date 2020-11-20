@@ -4,6 +4,7 @@ import edu.bupt.wangfu.info.device.User;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,6 @@ public class LocalSubPub {
 
     //本地发布表，key —— 用户信息，value —— 发布主题
     private Map<User, List<String>> localPubMap = new HashMap<>();
+
+    private ArrayList<String> subList = new ArrayList<>();
 }

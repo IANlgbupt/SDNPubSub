@@ -17,7 +17,7 @@ import java.io.IOException;
         serviceName="NotificationProcessImpl")
 public class UserNotificationProcessImpl implements INotificationProcess {
 
-    public void notificationProcess(String notification) {
+    public String  notificationProcess(String notification) {
         String topic = splitString(notification, "<topic>", "</topic>");
         String msg = splitString(notification, "<message>", "</message>");
         if (msg.startsWith("rtp--")) {
@@ -43,25 +43,38 @@ public class UserNotificationProcessImpl implements INotificationProcess {
             MySubscriber.fsynch.addFrame(toolkit.createImage(payload, 0, payload_length), seqNb);
         }else {
             //文本消息
-//            System.out.println("收到订阅主题 " + topic + " 文本消息：" + msg);
-            String[] strings = msg.split(":");
-            int id = Integer.parseInt(strings[0]);
-            if (id <= MySubscriber.num) {
-                MySubscriber.sendTimeList.add(Long.valueOf(strings[1]));
-                MySubscriber.receiveTimeList.add(System.currentTimeMillis());
-            }else {
-                if (MySubscriber.flag) {
-                    int count = MySubscriber.sendTimeList.size();
-                    long delay = 0L;
-                    for (int i = 0; i < count; i++) {
-                        delay += Math.abs(MySubscriber.receiveTimeList.get(i) - MySubscriber.sendTimeList.get(i));
-                    }
-                    System.out.println("发包总数：" + MySubscriber.num + " 接收总数：" + count + " 总时延：" + delay
-                            + " 平均时延：" + delay/count);
-                    MySubscriber.flag = false;
-                }
-            }
+//            MySubscriber.total++;
+//            System.out.println(MySubscriber.total);
+            System.out.println("收到订阅主题 " + topic + " 文本消息：" + msg);
+//            String[] strings = msg.split(":");
+//            int id = Integer.parseInt(strings[0]);
+//
+//            if (id <=600000) {
+//                MySubscriber.sendTimeList.add(Long.valueOf(strings[1]));
+//                MySubscriber.receiveTimeList.add(System.nanoTime());
+////                System.out.println(msg);
+//            }else {
+//                if (MySubscriber.flag) {
+//                    int count = MySubscriber.sendTimeList.size();
+//                    long delay = 0L;
+//                    for (int i = 0; i < count; i++) {
+////                        System.out.println(MySubscriber.receiveTimeList.get(i)+"      "+MySubscriber.sendTimeList.get(i));
+//                        delay += Math.abs(MySubscriber.receiveTimeList.get(i) - MySubscriber.sendTimeList.get(i));
+//                    }
+//                    long delay_2 = Math.abs(MySubscriber.receiveTimeList.get(0) -
+//                            MySubscriber.sendTimeList.get(0));
+//                    long delay_3 = Math.abs(MySubscriber.receiveTimeList.get(count-1) -
+//                            MySubscriber.sendTimeList.get(count-1));
+//                    System.out.println(" 接收总数：" + count + " 总时延：" + delay
+//                            + " 时延："+delay_2 + "时延：" + delay_3);
+//                    MySubscriber.flag = false;
+//                }
+//            }
+////            while(true){
+////
+////            }
         }
+        return topic;
     }
 
     public String splitString(String string, String start, String end)

@@ -9,13 +9,11 @@ import org.springframework.stereotype.Component;
 
 import static edu.bupt.wangfu.module.util.Constant.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.Inet6Address;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 
 /**
  * 提供消息的传输与接收方法
@@ -86,6 +84,7 @@ public class MultiHandler {
 
 			byte[] data = new byte[409600];
 			bais = new ByteArrayInputStream(data);
+			multicastSocket.setReceiveBufferSize(1024*1024*100);
 			//创建一个用于接收数据的数据包
 			DatagramPacket datagramPacket = new DatagramPacket(data, data.length);
 			//接收数据包
@@ -117,6 +116,26 @@ public class MultiHandler {
 			multicastSocket.close();
 		} catch (Exception exception) {
 			exception.printStackTrace();
+		}
+	}
+
+//	public static void main(String[] args) {
+//		MultiHandler handler = new MultiHandler(8080, "FF0E:0080:0401:0000:0000:0000:0000:A000");
+//		while (true) {
+//			Object obj = handler.v6Receive();
+//			System.out.println(obj);
+//		}
+//	}
+
+	public static void main(String[] args) {
+		MultiHandler handler = new MultiHandler(8080, "FF0E:0080:0401:0000:0000:0000:0000:A000");
+		for (int i = 0; i < 1000; i++) {
+			handler.v6Send(i);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

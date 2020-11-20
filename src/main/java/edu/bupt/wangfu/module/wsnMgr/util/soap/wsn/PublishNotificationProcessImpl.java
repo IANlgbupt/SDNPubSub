@@ -5,9 +5,7 @@ import edu.bupt.wangfu.module.topicTreeMgr.topicTree.EncodeTopicTree;
 import edu.bupt.wangfu.module.util.MultiHandler;
 import edu.bupt.wangfu.module.wsnMgr.WsnMgr;
 import edu.bupt.wangfu.module.wsnMgr.util.soap.INotificationProcess;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+
 
 import javax.jws.WebService;
 
@@ -32,16 +30,19 @@ public class PublishNotificationProcessImpl implements INotificationProcess{
 
     //发布
     @Override
-    public void notificationProcess(String notification) {
+    public String notificationProcess(String notification) {
         String message = splitString(notification, "<message>", "</message>");
         String topic = splitString(notification, "<topic>", "</topic>");
         //发布主题已经注册，直接传输message
         String encodeAddress = encodeTopicTree.getAddress(topic);
+        System.out.println("encodeAddress:"+encodeAddress);
+//        String encodeAddress = "FF0E:80:401::A000";
         if (encodeAddress == null) {
             System.out.println("该主题未找到编码，无法传输！");
         }else {
             send2user(encodeAddress, message);
         }
+        return message;
     }
 
     public String splitString(String string, String start, String end)

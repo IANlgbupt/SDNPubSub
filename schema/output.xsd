@@ -1,12 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/xsd/" targetNamespace="http://www.example.org/xsd/">
-  <topic xmlns="" name="all:Test:output" type="tns:ComplexType"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="name" type="xs:string"/>
 
-  <values xmlns="" name="test">
-    <test1 type="int"/>
-    <test2 type="int"/>   
-</values>
-<values xmlns="" name="soundarray">
-   <target1 type="int"/>
-    <target2 type="int"/> 
-  </values>
- </schema>
+</xs:schema>

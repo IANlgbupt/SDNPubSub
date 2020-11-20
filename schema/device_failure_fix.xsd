@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="device_fix" type="xs:string">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="no" type="xs:string"/>
+                <xs:element name="factory_no" type="xs:integer"/>
+                <xs:element name="device_no" type="xs:integer"/>
+                <xs:element name="failure_type" type="xs:integer"/>
+                <xs:element name="failure_value" type="xs:float"/>
+                <xs:element name="time" type="xs:dateTime"/>
+                <xs:element name="fix_person" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

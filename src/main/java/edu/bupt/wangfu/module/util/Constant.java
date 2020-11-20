@@ -62,7 +62,7 @@ public class Constant {
     //流表操作 -- 查看
     public static final String DUMP = "dump";
 
-    public static String SWITCH_ADDRESS = "192.168.100.101";
+    public static String SWITCH_ADDRESS = "192.168.99.100";
 
     public static String ADD_FLOW = "ovs-ofctl add-flow br0 ";
 
@@ -75,22 +75,22 @@ public class Constant {
     public static String INIT_QUEUES = "ovs-vsctl -- set port ge-1/1/%d qos=@newqos -- --id=@newqos create qos type=PRONTO_STRICT queues=0=@q0,1=@q1,2=@q2 -- --id=@q0 create queue other-config:min-rate=60000000 other-config:max-rate=60000000 -- --id=@q1 create queue other-config:min-rate=30000000 other-config:max-rate=30000000  -- --id=@q2 create queue other-config:min-rate=10000000 other-config:max-rate=10000000";
 
     //wsn服务地址
-    public static String wsnAddr = "http://192.168.100.11:9010/wsn-core";
+    public static String wsnAddr = "http://127.0.0.1:9011/wsn-core";
 
     //wsn消息接收地址
-    public static String publishAddr = "http://192.168.100.11:%d/wsn-publish";
+    public static String publishAddr = "http://127.0.0.1:%d/wsn-publish";
 
     //消息接收端口，从10000开始，预先保留200个
     public static int publishPort = 10000;
 
     //订阅地址
-    public static String receiveAddr = "http://192.168.100.11:9015/wsn-subscribe";
+    public static String receiveAddr = "http://127.0.0.1:9008/wsn-subscribe";
 
-    public static String receiveTopic = "test1";
+    public static String receiveTopic = "test";
 
-    public static String sendAddr = "http://192.168.100.11:9018/wsn-send";
+    public static String sendAddr = "http://127.0.0.1:9019/wsn-send";
 
-    public static String sendTopic = "test1";
+    public static String sendTopic = "test";
 
     //队列调度间隔
     public static String QUEUE_PERIOD = "100000";
@@ -105,7 +105,7 @@ public class Constant {
     负载均衡策略相关配置
      */
     //阻塞，判断子队列任务数量为多少时，子队列发生了阻塞
-    public static String blockSize = "20";
+    public static String blockSize = "50000";
 
     //阈值，判断拥塞子队列占比多少时，主队列阻塞，需要暂停主队列
     public static String threshold = "0.2";

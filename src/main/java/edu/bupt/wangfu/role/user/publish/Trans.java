@@ -1,37 +1,53 @@
 package edu.bupt.wangfu.role.user.publish;
 
 import edu.bupt.wangfu.module.wsnMgr.util.soap.SendWSNCommandWSSyn;
-import edu.bupt.wangfu.module.wsnMgr.util.soap.wsn.SendNotificationProcessImpl;
-
-import javax.xml.ws.Endpoint;
-
-import java.util.concurrent.TimeUnit;
-
-import static edu.bupt.wangfu.module.util.Constant.*;
 
 public class Trans {
 	public static SendWSNCommandWSSyn register;
 
 	public static SendWSNCommandWSSyn send;
 
-	public static String publishAddress = "";
+	public String topic;
+	public String sendAddr;
+	public String wsnAddr;
+
+	private String id;
+	public String publishAddress = "";
 
 	private static int i = 0;
 
 	//设置用户id
-	public static final String id = String.valueOf(System.currentTimeMillis());
-	
+
+
+	public void register()
+	{
+		register = new SendWSNCommandWSSyn(sendAddr, wsnAddr);
+
+		publishAddress = register.register(this.id, topic, sendAddr);
+		System.out.println(publishAddress);
+	}
+
+	public Trans(String wsnAddr,String sendAddr,String sendTopic)
+	{
+		this.wsnAddr = wsnAddr;
+		this.sendAddr = sendAddr;
+		this.topic = sendTopic;
+		register = new SendWSNCommandWSSyn(sendAddr, wsnAddr);
+		this.id = String.valueOf(System.currentTimeMillis());
+		publishAddress = register.register(id, topic, this.sendAddr);
+	}
 	public Trans() {
 		register = new SendWSNCommandWSSyn(sendAddr, wsnAddr);
-		SendNotificationProcessImpl impl = new SendNotificationProcessImpl();
-		Endpoint.publish(sendAddr, impl);
-		register.register(id, sendTopic, sendAddr);
+//		SendNotificationProcessImpl impl = new SendNotificationProcessImpl();
+//		Endpoint.publish(sendAddr, impl);
+		//publishAddress = register.register(id, sendTopic, sendAddr);
+		//System.out.println(publishAddress);
 	}
 
 	public void sendMethod(String msg) {
 		if (!publishAddress.equals("")) {
 			send = new SendWSNCommandWSSyn(sendAddr, publishAddress);
-			send.publish(id, sendTopic, msg);
+			send.publish(id, topic, msg);
 		}else {
 			System.out.println("用户还未获得发布地址，无法发布！");
 		}
@@ -50,7 +66,7 @@ public class Trans {
 		send = new SendWSNCommandWSSyn(sendAddr, publishAddress);
 		//发三倍，防止丢包
 		for (int i = 0; i < MyPublisher.num * 1.5; i++) {
-			send.publish(id, sendTopic, i + ":" + System.currentTimeMillis() + ":" + msg);
+			//send.publish(id, sendTopic, i + ":" + System.currentTimeMillis() + ":" + msg);
 		}
 		System.out.println("over");
 	}
@@ -61,7 +77,7 @@ public class Trans {
 		}else {
 			System.out.println("用户还未获得发布地址，无法发布！");
 		}
-		send.publish(id, sendTopic, String.valueOf(System.currentTimeMillis()));
+		//send.publish(id, sendTopic, String.valueOf(System.currentTimeMillis()));
 //		StringBuilder sb = new StringBuilder();
 //		for (int i = 0; i < 1024-13-4; i++) {
 //			sb.append('a');
@@ -83,4 +99,5 @@ public class Trans {
 //		}
 		System.out.println("over");
 	}
+
 }

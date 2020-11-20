@@ -1,15 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/xsd/" targetNamespace="http://www.example.org/xsd/">
-	<include xmlns="" schemaLocation=""/>
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="name" type="xs:string"/>
 
-	<element xmlns="" name="topic" type="tns:ComplexType"/>
-
-
-	<complexType xmlns="" name="ComplexType">
-		<sequence>
-			<element name="name" type="string">报警</element>
-			<element name="location" type="string"/>
-			<element name="value" type="double"/>
-		</sequence>
-	</complexType>
-	
-</schema>
+</xs:schema>

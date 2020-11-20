@@ -62,6 +62,9 @@ public class OvsProcess {
     private Session session;
     private ChannelExec channel;
 
+    private String url;
+    private String pass;
+
     public void init() {
         try {
             Switch localSwitch = controller.getSwitches().get(controller.getLocalSwtId());
@@ -85,6 +88,15 @@ public class OvsProcess {
      * @param cmd
      * @return
      */
+    //重写下发流表代码，通过连接控制器，然后控制器去下发流表
+    public synchronized String remoteExecuteCommandFromContro(String cmd){
+        StringBuilder sb = new StringBuilder();
+        //连接控制器
+        //向控制器发送http请求，控制器来下发流表
+        //根据http错误码来判断是否下发成功
+        return "success";
+    }
+
     public synchronized String remoteExecuteCommand(String cmd) {
         StringBuilder sb = new StringBuilder();
         try {

@@ -17,7 +17,7 @@ import java.util.*;
 @PropertySource("classpath:/controller.properties")
 public class Controller extends DevInfo{
 
-    @Value("${GroupControllerAddr:192.168.100.100}")
+    @Value("${GroupControllerAddr:192.168.99.121}")
     private String GroupControllerAddr;
 
     //保存管理员所在集群名
@@ -25,7 +25,7 @@ public class Controller extends DevInfo{
     private String adminName;
 
     //本地集群名
-    @Value("${localGroupName:G1}")
+    @Value("${localGroupName:G2}")
     private String localGroupName;
 
     @Value("${role:admin}")
@@ -35,7 +35,7 @@ public class Controller extends DevInfo{
     private List<Host> hostList = new LinkedList<>();
 
     //本地集群地址
-    @Value("${localAddr:FF0E:0000:0000:0000:0001:2345:6792:abcd}")
+    @Value("${localAddr:FF0E:0000:0000:0000:0001:2345:6793:ABCD}")
     private String localAddr;
 
     //管理员交互地址，用于接收集群信息、集群时延请求、主题树、带宽分配信息等
@@ -47,7 +47,7 @@ public class Controller extends DevInfo{
     private String sysV6Addr;
 
     //wsn地址，用于接收本地控制器下发的主题编码消息
-    @Value("${sysV6Addr:FF0E:0000:0000:0000:0001:2345:6791:ABCD}")
+    @Value("${wsnV6Addr:FF0E:0000:0000:0000:0001:2345:6791:ABCD}")
     private String wsnV6Addr;
 
     @Value("${adminPort:30001}")
@@ -63,7 +63,7 @@ public class Controller extends DevInfo{
     private int topicPort;
 
     //控制器的主机在交换机上的连接端口
-    @Value("${switchPort:5}")
+    @Value("${switchPort:1}")
     private int switchPort;
 
     //本地交换机，key是swtId

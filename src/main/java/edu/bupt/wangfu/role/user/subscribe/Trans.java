@@ -15,10 +15,28 @@ import static edu.bupt.wangfu.module.util.Constant.wsnAddr;
  */
 public class Trans {
 
+	private String receivAddr;
+	private String wsnAddress;
+	public String topic;
+	public static SendWSNCommand recv;
 	public static SendWSNCommand receive = new SendWSNCommand(receiveAddr, wsnAddr);
 
 	//设置用户id
-	public static final String id = String.valueOf(System.currentTimeMillis());
+	public  String id = String.valueOf(System.currentTimeMillis());
+
+	public Trans(String receiveAddr,String wsnAddr,String topic)
+	{
+		this.receivAddr = receiveAddr;
+		this.wsnAddress = wsnAddr;
+		this.topic = topic;
+	}
+	public void subscribe()
+	{
+		UserNotificationProcessImpl implementor = new UserNotificationProcessImpl();
+		recv = new SendWSNCommand(this.receivAddr,this.wsnAddress);
+		Endpoint endpint = Endpoint.publish(receiveAddr, implementor);
+		recv.subscribe(id, receiveTopic);
+	}
 
 	public Trans() {
 		// 消息处理逻辑

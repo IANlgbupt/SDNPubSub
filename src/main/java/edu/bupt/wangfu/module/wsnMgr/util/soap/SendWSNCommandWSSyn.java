@@ -29,7 +29,8 @@ public class SendWSNCommandWSSyn {
 		client = new HttpClient();
 	}
 
-	protected void send(Map<String, String> params, String charset, boolean pretty,String content) {
+	protected String send(Map<String, String> params, String charset, boolean pretty,String content) {
+		StringBuffer response = new StringBuffer();
    		PostMethod method = new PostMethod(url); 
 		try {
 			method.setRequestEntity(new StringRequestEntity(content, "text/xml", "utf-8"));
@@ -49,7 +50,12 @@ public class SendWSNCommandWSSyn {
 			 statusCode = client.executeMethod(method);
 			 BufferedReader reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream(), charset));
 			 String line;
-			 while ((line = reader.readLine()) != null) {}
+			 while ((line = reader.readLine()) != null) {
+				 if (pretty)
+					 response.append( line ).append( System.getProperty( "line.separator" ) );
+				 else
+					 response.append( line );
+			 }
 			 reader.close();
 			 if( method.getStatusCode()==500)
 			 {
@@ -63,6 +69,8 @@ public class SendWSNCommandWSSyn {
 		 } finally {
 
 		 }
+		String res = response.toString();
+		return res;
     }
 	
     public int publish(String id, String topic, String msg){
@@ -88,7 +96,7 @@ public class SendWSNCommandWSSyn {
 		 content += EscapeSequenceGenerate("</wsnt:Filter>");
 		 content += EscapeSequenceGenerate("<wsnt:SubscriberAddress>");
 		 content += EscapeSequenceGenerate("</wsnt:SubscriberAddress>");
-		 content += EscapeSequenceGenerate("</wsnt:Subscribe>");
+		 content += EscapeSequenceGenerate("</wsnt:Publish>");
 		 content += "</org:WsnProcess>";
 		 content += "</soapenv:Body>";
 		 content += "</soapenv:Envelope>";
@@ -97,7 +105,7 @@ public class SendWSNCommandWSSyn {
 		return statusCode;
 	}
 
-	public int register(String id, String topic, String sendAddress){
+	public String register(String id, String topic, String sendAddress){
 		String content = "";
 		content += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		content += "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:org=\"http://edu.bupt.wangfu.module.wsnMgr.util.soap\">";
@@ -120,13 +128,17 @@ public class SendWSNCommandWSSyn {
 		content += EscapeSequenceGenerate("</wsnt:Filter>");
 		content += EscapeSequenceGenerate("<wsnt:SubscriberAddress>");
 		content += EscapeSequenceGenerate("</wsnt:SubscriberAddress>");
-		content += EscapeSequenceGenerate("</wsnt:Subscribe>");
+		content += EscapeSequenceGenerate("</wsnt:Register>");
 		content += "</org:WsnProcess>";
 		content += "</soapenv:Body>";
 		content += "</soapenv:Envelope>";
 
-		send(new HashMap<>(), "utf-8", true, content.trim());
-		return statusCode;
+		String res = send(new HashMap<>(), "utf-8", true, content.trim());
+        res = res.replaceAll( "&lt;", "<" );
+        res = res.replaceAll( "&gt;", ">" );
+        res = res.replaceAll( "&quot;", "\"\"" );
+//		System.out.println( "response:  " + res );
+        return splitString(res,"<address>","</address>");
 	}
 
 	public int notify(String topic, String msg){
@@ -150,7 +162,7 @@ public class SendWSNCommandWSSyn {
 		content += EscapeSequenceGenerate("</wsnt:Filter>");
 		content += EscapeSequenceGenerate("<wsnt:SubscriberAddress>");
 		content += EscapeSequenceGenerate("</wsnt:SubscriberAddress>");
-		content += EscapeSequenceGenerate("</wsnt:Subscribe>");
+		content += EscapeSequenceGenerate("</wsnt:Notify>");
 		content += "</org:WsnProcess>";
 		content += "</soapenv:Body>";
 		content += "</soapenv:Envelope>";
@@ -163,6 +175,13 @@ public class SendWSNCommandWSSyn {
 		string = string.replaceAll("<", "&lt;");
 		string = string.replaceAll(">", "&gt;");
 		return string;
+	}
+
+	public String splitString(String string, String start, String end)
+	{
+		int from = string.indexOf(start) + start.length();
+		int to = string.indexOf(end);
+		return string.substring(from, to);
 	}
 }
 

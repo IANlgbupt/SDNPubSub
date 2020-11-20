@@ -151,7 +151,7 @@ public class ManagerStart {
         //更新constant 类中的属性值
         PropertiesTest.refreshPro();
         //集群初始化，流表预下发
-        managerInit.init();
+        //managerInit.init();
         //生成编码主题树
         topicTreeMgr.buildTopicTree();
         //时间驱动，定时向控制器发送编码主题树
@@ -166,8 +166,18 @@ public class ManagerStart {
         //时间驱动，启动管理员模块、ui界面
         new Timer().schedule(new GroupTask(), 1000, 20000);
         managerMgr.start();
+        //initQueue();
         //启动队列管理
         queueMgr.start(exec);
+    }
+    //Add
+    public void initQueue()
+    {
+        for (Switch swt : controller.getOutSwitches().values()) {
+            for (String port : swt.getOutPorts().values()) {
+                ovsProcess.defaultInitQueues(Integer.valueOf(port));
+            }
+        }
     }
 
     public class ControllerTopicTask extends TimerTask {
@@ -187,8 +197,8 @@ public class ManagerStart {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(ControllerConfig.class);
         ManagerStart managerStart = (ManagerStart) context.getBean("managerStart");
-//        managerStart.start();
-        managerStart.test();
+        managerStart.start();
+//        managerStart.test();
     }
 
     public void test() {

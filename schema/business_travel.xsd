@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="business_travel">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ID" type="xs:string"/>
+                <xs:element name="major" type="xs:string"/>
+                <xs:element name="number" type="xs:string"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="reason" type="xs:string"/>
+                <xs:element name="leave_days" type="xs:string"/>
+                <xs:element name="start_day" type="xs:string"/>
+                <xs:element name="result" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

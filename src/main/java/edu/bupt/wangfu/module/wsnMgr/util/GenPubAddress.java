@@ -22,6 +22,7 @@ public class GenPubAddress {
 
     public static boolean isNew(Set<User> allConsumers, User user) {
         for (User ur : allConsumers) {
+            System.out.println("ur.getId():"+ur.getId()+" user.getId()"+user.getId());
             if (ur.getId().equals(user.getId())) {
                 return false;
             }

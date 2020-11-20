@@ -49,13 +49,14 @@ public class WsnReceive implements Runnable{
      * @param msg
      */
     public void onMsgReceive(Object msg) {
-        System.out.println("wsnReceive 收到消息");
+        //System.out.println("wsnReceive 收到消息" + msg);
         if (msg instanceof WsnMessage) {
             if (msg instanceof TopicEncodeMsg) {
                 TopicEncodeMsg encodeMsg = (TopicEncodeMsg) msg;
                 if (encodeMsg.getTopicTree().getNodes().size() != 0) {
                     wsnMgr.setEncodeTopicTree(encodeMsg.getTopicTree());
-                    System.out.println("主题树：\n" + msg);
+                    //System.out.println("主题树：\n" + msg);
+                    System.out.println("收到主题树消息");
                 }
             }
         }

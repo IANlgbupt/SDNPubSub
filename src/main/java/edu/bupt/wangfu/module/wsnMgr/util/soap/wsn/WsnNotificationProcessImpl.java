@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import javax.jws.WebService;
 
+import java.util.HashMap;
+
 import static edu.bupt.wangfu.module.util.Constant.*;
 
 /**
@@ -40,10 +42,11 @@ public class WsnNotificationProcessImpl implements INotificationProcess{
      * @param notification
      */
     @Override
-    public void notificationProcess(String notification) {
+    public String notificationProcess(String notification) {
         System.out.println("收到消息：" + notification);
         String id, topic, message, encodeAddress, userAddress;
         id = splitString(notification, "<id>", "</id>");
+        System.out.println("notificationProcess_id"+id);
         topic = splitString(notification, "<topic>", "</topic>");
         userAddress = splitString(notification, "<userAddress>", "</userAddress>");
         long delay;
@@ -70,23 +73,62 @@ public class WsnNotificationProcessImpl implements INotificationProcess{
                 delay = Long.parseLong(splitString(notification, "<delay>", "</delay>"));
                 lostRate = Double.parseDouble(splitString(notification, "<lostRate>", "</lostRate>"));
                 config2controller(topic, delay, lostRate, user);
+//                return "success";
                 break;
             case REGISTER:
                 //发布
                 user = new User();
                 user.setId(id);
+                String publishAddress;
                 //注册发布信息
-                String publishAddress = wsnMgr.registerPub(user, topic);
+                //发布消息地址 addr
+                System.out.println("当前订阅的地址:"+topic);
+
+                String tpAddr = PublishAddrByTopic(Instance.TPmap,topic);
+                System.out.println("========tpAddr:========="+tpAddr);
+                if(!tpAddr.equals("")) {
+                    publishAddress = tpAddr;
+                }else
+                {
+                    publishAddress = wsnMgr.registerPub(user, topic);
+                }
+
+                System.out.println("========publishAddress:========="+publishAddress);
+
                 if (!publishAddress.equals("")) {
-                    send2user(userAddress, publishAddress);
+                    Instance.TPmap.put(topic,publishAddress);
+                    return "<address>"+publishAddress+"</address>";
+//                    send2user(userAddress, publishAddress);
                 }
                 break;
             default:
                 System.out.println("未识别消息类别！");
+//                return "success";
                 break;
         }
+        return "success";
     }
 
+    public String PublishAddrByTopic(HashMap map,String topic)
+    {
+        if(map.size() != 0)
+        {
+            System.out.println("-----------------------------------------in-----------------------------");
+            for(String s:Instance.TPmap.keySet())
+            {
+                if(s.equals(topic))
+                {
+                    System.out.println("-----------------------------------------in-----------------------------");
+                    return Instance.TPmap.get(s);
+                }
+                System.out.println("Topic:"+s+"   publishAddress:"+Instance.TPmap.get(s));
+            }
+            System.out.println("-----------------------------------------in-----------------------------");
+        }
+
+
+        return "";
+    }
     /**
      * 将本地新增订阅情况发送给控制器
      * @param topic

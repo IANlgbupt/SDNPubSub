@@ -471,7 +471,7 @@ public class PSManagerUI {
 
         //队列信息
         queues = new JPanel();
-        groupsInfoTabbedPane.addTab("队列信息", null, queues, null);
+        //groupsInfoTabbedPane.addTab("队列信息", null, queues, null);
 
         // 拓扑
 //        topoManage = new JPanel(new BorderLayout());
@@ -1365,7 +1365,7 @@ public class PSManagerUI {
                                 groupsInfoTabbedPane.setTitleAt(1, ("集群" + currentGroup + "设备"));
                                 groupsInfoTabbedPane.setTitleAt(2, ("集群" + currentGroup + "订阅"));
                                 groupsInfoTabbedPane.setTitleAt(3, ("集群" + currentGroup + "端口"));
-                                groupsInfoTabbedPane.setTitleAt(4, ("集群" + currentGroup + "队列"));
+                                //groupsInfoTabbedPane.setTitleAt(4, ("集群" + currentGroup + "队列"));
                                 //添加交换机和控制器
 //                                if (controllerConf != null) {
 //                                    controllerConf.removeAll();
